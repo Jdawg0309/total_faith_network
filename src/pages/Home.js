@@ -1,148 +1,277 @@
-// pages/Home.js
-import React, { useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { createGlobalStyle } from 'styled-components';
 import introVideo from '../videos/intro.mp4';
-import { useSpring, animated } from 'react-spring';
-import styled from 'styled-components';
+import { useSpring, animated, config as springConfig } from 'react-spring';
+import styled, { keyframes } from 'styled-components';
+import Footer from '../components/Footer';
+import RemoteControl from '../components/RemoteControl';
+import FeaturedShows from '../components/FeaturedShows';
+import ChannelGuide from '../components/ChannelGuide';
+import TheaterStage from '../components/TheaterStage';
+import ContentSection from '../components/ContentSection';
+import FloatingRemoteToggle from '../components/FloatingRemoteToggle';
 
-// Blue color palette
-const colors = {
-  primary: '#1A237E',
-  secondary: '#1976D2',
-  accent: '#64B5F6',
-  background: '#E3F2FD',
-  text: '#0D47A1'
-};
+// Global reset to prevent horizontal overflow
+const GlobalStyle = createGlobalStyle`
+  *, *::before, *::after { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0;
+  }
+  
+  html, body { 
+    width: 100%; 
+    height: 100%; 
+    overflow-x: hidden; 
+    font-family: 'Poppins', 'Segoe UI', sans-serif;
+    scroll-behavior: smooth;
+    background-color: #0a0a12;
+    color: #e0e0ff;
+  }
+`;
 
-const Home = () => {
-  const fadeIn = useSpring({
-    from: { opacity: 0 },
-    to: { opacity: 1 },
-    config: { duration: 1000 }
+const starTwinkle = keyframes`
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+`;
+
+export default function Home() {
+  const [navVisible, setNavVisible] = useState(false);
+  const [currentSection, setCurrentSection] = useState('home');
+  const [remoteVisible, setRemoteVisible] = useState(true);
+  
+  // Curtain animation
+  const curtainAnim = useSpring({
+    from: { leftX: 0, rightX: 0 },
+    to: { leftX: -100, rightX: 100 },
+    config: { ...springConfig.wobbly, friction: 30 },
+    delay: 500,
+    onRest: () => setNavVisible(true)
   });
 
+  // Fade in content after curtains open
+  const contentAnim = useSpring({
+    from: { opacity: 0, transform: 'translateY(30px)' },
+    to: { opacity: 1, transform: 'translateY(0)' },
+    config: { duration: 1000, ...springConfig.easeOut },
+    delay: 2000,
+  });
+
+  const handleRemote = (button) => {
+    console.log(`${button} pressed`);
+    if (button === 'menu') {
+      setNavVisible(!navVisible);
+    }
+    if (button === 'close') {
+      setRemoteVisible(false);
+    }
+  };
+  
+  // Create stars for background
+  const stars = Array.from({ length: 150 }).map((_, i) => ({
+    id: i,
+    size: Math.random() * 3 + 1,
+    left: `${Math.random() * 100}%`,
+    top: `${Math.random() * 100}%`,
+    delay: Math.random() * 5,
+    duration: Math.random() * 3 + 2
+  }));
+
   return (
-    <Container style={fadeIn}>
-      <VideoSection>
-        <Video autoPlay muted loop playsInline>
-          <source src={introVideo} type="video/mp4" />
-        </Video>
-        <VideoOverlay />
-      </VideoSection>
+    <>
+      <GlobalStyle />
+      
+      {/* Starry background */}
+      <StarryBackground>
+        {stars.map(star => (
+          <Star 
+            key={star.id} 
+            size={star.size} 
+            left={star.left} 
+            top={star.top} 
+            delay={star.delay}
+            duration={star.duration}
+          />
+        ))}
+      </StarryBackground>
+      
+      <PageContainer>
+        <FloatingRemoteToggle 
+          isVisible={!remoteVisible} 
+          onClick={() => setRemoteVisible(true)} 
+        />
+        
+        <TheaterStage curtainAnim={curtainAnim} introVideo={introVideo} />
+        
+        <ContentSection anim={contentAnim} />
 
-      <ContentSection>
-        <ContentWrapper>
-          <AnimatedHeading>Welcome to Total Faith Network</AnimatedHeading>
-          <AnimatedParagraph>
-            Empowering communities through faith-driven initiatives and 
-            innovative solutions for a better tomorrow.
-          </AnimatedParagraph>
-          <CTAButton>Explore Our Mission</CTAButton>
-        </ContentWrapper>
-      </ContentSection>
-    </Container>
+        <FeaturedSection>
+          <SectionTitle>Featured Programs</SectionTitle>
+          <FeaturedShows />
+        </FeaturedSection>
+        
+        <ChannelGuideSection>
+          <SectionTitle>Channel Guide</SectionTitle>
+          <ChannelGuide />
+        </ChannelGuideSection>
+        
+        <OnDemandSection>
+          <SectionTitle>On Demand</SectionTitle>
+          <OnDemandContent>
+            <OnDemandCard>
+              <CardIcon>🎬</CardIcon>
+              <CardTitle>Original Series</CardTitle>
+              <CardText>Exclusive content only on TFN</CardText>
+            </OnDemandCard>
+            <OnDemandCard>
+              <CardIcon>🎙️</CardIcon>
+              <CardTitle>Podcasts</CardTitle>
+              <CardText>Faith and inspiration on the go</CardText>
+            </OnDemandCard>
+            <OnDemandCard>
+              <CardIcon>📺</CardIcon>
+              <CardTitle>Live Events</CardTitle>
+              <CardText>Watch our special broadcasts</CardText>
+            </OnDemandCard>
+          </OnDemandContent>
+        </OnDemandSection>
+        
+        <Footer />
+      </PageContainer>
+    </>
   );
-};
+}
 
-// Styled components with animations
-const Container = styled(animated.div)`
-  display: grid;
-  grid-template-columns: 1fr;
-  min-height: 100vh;
+// ========================
+// Styled Components
+// ========================
 
-  @media (min-width: 768px) {
-    grid-template-columns: 1fr 1fr;
-  }
-`;
-
-const VideoSection = styled.div`
-  position: relative;
-  min-height: 50vh;
-  overflow: hidden;
-
-  @media (min-width: 768px) {
-    min-height: 100vh;
-  }
-`;
-
-const Video = styled.video`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transform: scale(1);
-  transition: transform 0.5s ease;
-
-  ${VideoSection}:hover & {
-    transform: scale(1.05);
-  }
-`;
-
-const VideoOverlay = styled.div`
-  position: absolute;
+const StarryBackground = styled.div`
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(45deg, ${colors.primary}55, ${colors.secondary}55);
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
 `;
 
-const ContentSection = styled.div`
+const Star = styled.div`
+  position: absolute;
+  width: ${props => props.size}px;
+  height: ${props => props.size}px;
+  background: #fff;
+  border-radius: 50%;
+  left: ${props => props.left};
+  top: ${props => props.top};
+  opacity: 0.3;
+  animation: ${starTwinkle} ${props => props.duration}s infinite;
+  animation-delay: ${props => props.delay}s;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+`;
+
+const PageContainer = styled.div`
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+`;
+
+const FeaturedSection = styled.section`
+  padding: 5rem 2rem;
+  background: linear-gradient(to bottom, #0a0a12, #1a1a2e);
+  position: relative;
+  z-index: 2;
+`;
+
+const ChannelGuideSection = styled.section`
+  padding: 5rem 2rem;
+  background: linear-gradient(to bottom, #1a1a2e, #0a0a12);
+  position: relative;
+  z-index: 2;
+`;
+
+const OnDemandSection = styled.section`
+  padding: 5rem 2rem;
+  background: linear-gradient(to bottom, #0a0a12, #1a1a2e);
+  position: relative;
+  z-index: 2;
+`;
+
+const OnDemandContent = styled.div`
+  display: flex;
   justify-content: center;
-  padding: 2rem;
-  background: ${colors.background};
+  gap: 2rem;
+  flex-wrap: wrap;
+  max-width: 1200px;
+  margin: 0 auto;
   
-  @media (min-width: 768px) {
-    padding: 4rem;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: center;
   }
 `;
 
-const ContentWrapper = styled.div`
-  max-width: 600px;
+const OnDemandCard = styled.div`
+  background: rgba(25, 118, 210, 0.1);
+  border: 1px solid rgba(25, 118, 210, 0.3);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 300px;
   text-align: center;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  
+  &:hover {
+    transform: translateY(-10px);
+    background: rgba(25, 118, 210, 0.2);
+    box-shadow: 0 10px 30px rgba(25, 118, 210, 0.2);
+  }
 `;
 
-const AnimatedHeading = styled(animated.h1)`
-  font-size: 2.5rem;
-  color: ${colors.text};
+const CardIcon = styled.div`
+  font-size: 3rem;
   margin-bottom: 1.5rem;
-  font-weight: 700;
-  line-height: 1.2;
+`;
 
+const CardTitle = styled.h3`
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  color: #4fc3f7;
+`;
+
+const CardText = styled.p`
+  font-size: 1.1rem;
+  color: #e0e0ff;
+  line-height: 1.6;
+`;
+
+const SectionTitle = styled.h2`
+  font-size: 2.5rem;
+  text-align: center;
+  margin: 0 0 3rem;
+  background: linear-gradient(90deg, #ffcc00, #ff9800);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  position: relative;
+  padding-bottom: 1rem;
+  
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background: linear-gradient(90deg, #ffcc00, #ff9800);
+    border-radius: 2px;
+  }
+  
   @media (max-width: 768px) {
     font-size: 2rem;
   }
 `;
-
-const AnimatedParagraph = styled(animated.p)`
-  font-size: 1.1rem;
-  color: ${colors.text};
-  margin-bottom: 2rem;
-  line-height: 1.6;
-  opacity: 0.9;
-`;
-
-const CTAButton = styled.button`
-  padding: 1rem 2rem;
-  font-size: 1.1rem;
-  background: ${colors.secondary};
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  transform-origin: center;
-
-  &:hover {
-    background: ${colors.primary};
-    transform: scale(1.05);
-    box-shadow: 0 8px 20px ${colors.accent}33;
-  }
-
-  @media (max-width: 768px) {
-    width: 100%;
-    padding: 1.2rem;
-  }
-`;
-
-export default Home;

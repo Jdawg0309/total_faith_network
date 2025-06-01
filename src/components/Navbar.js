@@ -2,131 +2,140 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FiMenu, FiX } from 'react-icons/fi';
+import styled from 'styled-components';
+
+// Color variables
+const NAV_BG       = '#1A1A1A';
+const TEXT_PRIMARY = '#E0E0FF';
+// changed active link color from green → accent blue
+const TEXT_ACTIVE  = '#1976D2';
+const ACCENT       = '#1976D2';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
 
-  // Define all style objects here
-  const navStyles = {
-    backgroundColor: '#1a1a1a',
-    color: 'white',
-    padding: '1rem',
-  };
-
-  const containerStyles = {
-    maxWidth: '1200px',
-    margin: '0 auto',
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  };
-
-  const desktopMenuStyles = {
-    display: 'flex',
-    alignItems: 'center',
-    '@media (maxWidth: 768px)': {
-      display: 'none',
-    },
-  };
-
-  const logoStyles = {
-    fontSize: '1.5rem',
-    fontWeight: 'bold',
-    textDecoration: 'none',
-    color: 'white',
-  };
-
-  const linkStyles = {
-    marginLeft: '2rem',
-    textDecoration: 'none',
-    color: 'white',
-    transition: 'color 0.3s ease',
-    ':hover': {
-      color: '#fff', // Change to a different color (e.g., orange)
-    },
-  };
-
-  const mobileButtonStyles = {
-    display: 'none',
-    background: 'none',
-    border: 'none',
-    color: 'white',
-    cursor: 'pointer',
-    '@media (maxWidth: 768px)': {
-      display: 'block',
-    },
-  };
-
-  const mobileMenuStyles = {
-    display: 'none',
-    flexDirection: 'column',
-    padding: '1rem',
-    backgroundColor: '#2a2a2a',
-    '@media (maxWidth: 768px)': {
-      display: isOpen ? 'flex' : 'none',
-    },
-  };
-
-  const mobileLinkStyles = {
-    padding: '1rem',
-    textDecoration: 'none',
-    color: 'white',
-    ':hover': {
-      backgroundColor: '#3a3a3a',
-    },
-  };
-
-  // Modified NavLink component with props
-  const NavLink = ({ to, children, mobile }) => {
-    const location = useLocation();
-    const isActive = location.pathname === to;
-
-    return (
-      <Link
-        to={to}
-        style={{
-          ...(mobile ? mobileLinkStyles : linkStyles),
-          color: isActive ? '#4CAF50' : 'white'
-        }}
-        onClick={() => mobile && setIsOpen(false)}
-      >
-        {children}
-      </Link>
-    );
-  };
+  const handleToggle = () => setIsOpen(prev => !prev);
 
   return (
-    <nav style={navStyles}>
-      <div style={containerStyles}>
-        <Link to="/" style={logoStyles}>
-          Total Faith Network
-        </Link>
+    <Nav>
+      <NavContainer>
+        <Logo to="/">Total Faith Network</Logo>
 
-        <div style={desktopMenuStyles}>
-          <NavLink to="/">Home</NavLink>
-          <NavLink to="/about">About</NavLink>
-          <NavLink to="/portfolio">Portfolio</NavLink>
-          <NavLink to="/contact">Contact</NavLink>
-        </div>
+        <DesktopMenu>
+          <NavItem to="/" $active={location.pathname === '/'}>
+            Home
+          </NavItem>
+          <NavItem to="/about" $active={location.pathname === '/about'}>
+            About
+          </NavItem>
+          <NavItem to="/portfolio" $active={location.pathname === '/portfolio'}>
+            Portfolio
+          </NavItem>
+          <NavItem to="/contact" $active={location.pathname === '/contact'}>
+            Contact
+          </NavItem>
+        </DesktopMenu>
 
-        <button
-          style={mobileButtonStyles}
-          onClick={() => setIsOpen(!isOpen)}
-        >
+        <MobileToggle onClick={handleToggle}>
           {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
-        </button>
-      </div>
+        </MobileToggle>
+      </NavContainer>
 
-      {isOpen && (
-        <div style={mobileMenuStyles}>
-          <NavLink to="/" mobile>Home</NavLink>
-          <NavLink to="/about" mobile>About</NavLink>
-          <NavLink to="/portfolio" mobile>Portfolio</NavLink>
-          <NavLink to="/contact" mobile>Contact</NavLink>
-        </div>
-      )}
-    </nav>
+      <MobileMenu $isOpen={isOpen}>
+        <NavItem to="/" mobile $active={location.pathname === '/'} onClick={handleToggle}>
+          Home
+        </NavItem>
+        <NavItem to="/about" mobile $active={location.pathname === '/about'} onClick={handleToggle}>
+          About
+        </NavItem>
+        <NavItem to="/portfolio" mobile $active={location.pathname === '/portfolio'} onClick={handleToggle}>
+          Portfolio
+        </NavItem>
+        <NavItem to="/contact" mobile $active={location.pathname === '/contact'} onClick={handleToggle}>
+          Contact
+        </NavItem>
+      </MobileMenu>
+    </Nav>
   );
 };
 
 export default Navbar;
+
+// === Styled Components ===
+
+const Nav = styled.nav`
+  background-color: ${NAV_BG};
+  color: ${TEXT_PRIMARY};
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+`;
+
+const NavContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const Logo = styled(Link)`
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: ${TEXT_PRIMARY};
+
+  &:hover {
+    color: ${ACCENT};
+  }
+`;
+
+const DesktopMenu = styled.div`
+  display: flex;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const NavItem = styled(Link)`
+  margin-left: ${props => (props.mobile ? '0' : '2rem')};
+  padding: ${props => (props.mobile ? '1rem 0' : '0')};
+  text-decoration: none;
+  color: ${props => (props.$active ? TEXT_ACTIVE : TEXT_PRIMARY)};
+  font-weight: ${props => (props.$active ? '600' : '400')};
+  transition: color 0.3s ease, background-color 0.3s ease;
+
+  &:hover {
+    color: ${ACCENT};
+    background-color: ${props => (props.mobile ? 'rgba(255,255,255,0.05)' : 'transparent')};
+  }
+`;
+
+const MobileToggle = styled.button`
+  display: none;
+  background: none;
+  border: none;
+  color: ${TEXT_PRIMARY};
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+const MobileMenu = styled.div`
+  display: none;
+  flex-direction: column;
+  background-color: ${NAV_BG};
+  border-top: 1px solid rgba(255,255,255,0.1);
+
+  @media (max-width: 768px) {
+    display: ${props => (props.$isOpen ? 'flex' : 'none')};
+  }
+`;
