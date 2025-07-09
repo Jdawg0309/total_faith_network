@@ -7,12 +7,20 @@ import AdminSidebar from '../../components/admin/AdminSidebar';
 import VideoForm from '../../components/admin/VideoForm';
 import VideoList from '../../components/admin/VideoList';
 import CategoryManager from '../../components/admin/CategoryManager';
-import { DashboardContainer, DashboardContent, MainContent, SectionDivider } from '../../components/shared/StyledComponents';
+import BlogManager from '../../components/admin/BlogManager'; // ✅ Add BlogManager
+import { 
+  DashboardContainer, 
+  DashboardContent, 
+  MainContent, 
+  SectionDivider 
+} from '../../components/shared/StyledComponents';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
 const AdminDashboard = () => {
   const navigate = useNavigate();
+
+  const [currentView, setCurrentView] = useState('videos'); // ✅ Add state to track selected view
 
   useEffect(() => {
     const token = localStorage.getItem('authToken');
@@ -225,42 +233,54 @@ const AdminDashboard = () => {
         videosCount={videos.length}
       />
       <DashboardContent>
-        <AdminSidebar videosCount={videos.length} />
+        <AdminSidebar 
+          videosCount={videos.length} 
+          currentView={currentView}
+          setCurrentView={setCurrentView} // ✅ Add this prop so sidebar can toggle view
+        />
         <MainContent>
-          <VideoForm
-            formData={formData}
-            setFormData={setFormData}
-            videoFile={videoFile}
-            setVideoFile={setVideoFile}
-            avatarFile={avatarFile}
-            setAvatarFile={setAvatarFile}
-            previewUrl={previewUrl}
-            editingId={editingId}
-            isSubmitting={isSubmitting}
-            categories={categories}
-            resetForm={resetForm}
-            handleSubmit={handleSubmit}
-            handleUpdate={handleUpdate}
-          />
-          <SectionDivider />
-          <VideoList
-            videos={videos}
-            isLoading={isLoading}
-            handleEdit={handleEdit}
-            handleDelete={handleDelete}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            setCurrentPage={setCurrentPage}
-            searchTerm={searchTerm}
-          />
-          <SectionDivider />
-          <CategoryManager
-            categories={categories}
-            newCategory={newCategory}
-            setNewCategory={setNewCategory}
-            createCategory={createCategory}
-            deleteCategory={deleteCategory}
-          />
+          {currentView === 'videos' && (
+            <>
+              <VideoForm
+                formData={formData}
+                setFormData={setFormData}
+                videoFile={videoFile}
+                setVideoFile={setVideoFile}
+                avatarFile={avatarFile}
+                setAvatarFile={setAvatarFile}
+                previewUrl={previewUrl}
+                editingId={editingId}
+                isSubmitting={isSubmitting}
+                categories={categories}
+                resetForm={resetForm}
+                handleSubmit={handleSubmit}
+                handleUpdate={handleUpdate}
+              />
+              <SectionDivider />
+              <VideoList
+                videos={videos}
+                isLoading={isLoading}
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                setCurrentPage={setCurrentPage}
+                searchTerm={searchTerm}
+              />
+              <SectionDivider />
+              <CategoryManager
+                categories={categories}
+                newCategory={newCategory}
+                setNewCategory={setNewCategory}
+                createCategory={createCategory}
+                deleteCategory={deleteCategory}
+              />
+            </>
+          )}
+
+          {currentView === 'blog' && (
+            <BlogManager /> // ✅ Blog Manager view!
+          )}
         </MainContent>
       </DashboardContent>
     </DashboardContainer>

@@ -7,28 +7,34 @@ import {
   CountBadge 
 } from '../shared/StyledComponents';
 
-const AdminSidebar = ({ videosCount }) => {
+const AdminSidebar = ({ videosCount, currentView, setCurrentView }) => {
   return (
     <Sidebar>
       <SidebarSection>
         <SidebarTitle>Content</SidebarTitle>
-        <SidebarLink active>
-          <span>Videos</span> <CountBadge>{videosCount}</CountBadge>
+        <SidebarLink 
+          active={currentView === 'videos'} 
+          onClick={() => setCurrentView('videos')}
+        >
+          <span>Videos</span> 
+          <CountBadge>{videosCount}</CountBadge>
         </SidebarLink>
-        <SidebarLink><span>Playlists</span></SidebarLink>
-        <SidebarLink><span>Shorts</span></SidebarLink>
+        <SidebarLink 
+          active={currentView === 'blog'} 
+          onClick={() => setCurrentView('blog')}
+        >
+          <span>Blog Manager</span>
+        </SidebarLink>
       </SidebarSection>
-      
+
       <SidebarSection>
         <SidebarTitle>Analytics</SidebarTitle>
-        <SidebarLink><span>Overview</span></SidebarLink>
-        <SidebarLink><span>Audience</span></SidebarLink>
-      </SidebarSection>
-      
-      <SidebarSection>
-        <SidebarTitle>Settings</SidebarTitle>
-        <SidebarLink><span>Channel</span></SidebarLink>
-        <SidebarLink><span>Permissions</span></SidebarLink>
+        <SidebarLink>
+          <span>Overview</span>
+        </SidebarLink>
+        <SidebarLink>
+          <span>Audience</span>
+        </SidebarLink>
       </SidebarSection>
     </Sidebar>
   );
