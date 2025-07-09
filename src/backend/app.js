@@ -4,8 +4,8 @@ const authRoutes = require('./routes/auth');
 const videoRoutes = require('./routes/videos');
 const categoryRoutes = require('./routes/categories');
 const adminRoutes = require('./routes/admin');
+const postRoutes = require('./routes/posts');
 const path = require('path');
-
 // ✅ Explicit dotenv path resolution
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
@@ -43,6 +43,7 @@ db.exec(`
   );
 `);
 
+app.use('/api/posts', postRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/videos', videoRoutes);
 app.use('/api/categories', categoryRoutes);
