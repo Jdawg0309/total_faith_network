@@ -10,6 +10,8 @@
 
 # production
 /build
+/public
+backend/uploads/videos
 
 # misc
 .DS_Store

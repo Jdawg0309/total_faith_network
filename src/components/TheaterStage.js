@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import { animated } from '@react-spring/web';
-import RemoteControl from './RemoteControl';
 
 const TheaterStage = ({ curtainAnim, introVideo }) => {
   return (

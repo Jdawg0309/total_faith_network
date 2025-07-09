@@ -7,7 +7,9 @@ import Portfolio from './pages/Portfolio';
 import Contact from './pages/Contact';
 import Footer from './components/Footer';
 import GlobalStyles from './GlobalStyles';
-import DraggableRemote from './components/DraggableRemote';
+import Services from './pages/Services';
+import AdminLogin from './pages/AdminLogin';
+import AdminDashboard from './pages/AdminDashboard';
 
 // Main App component with router
 function App() {
@@ -20,7 +22,6 @@ function App() {
 
 // Component that uses router hooks
 function AppContent() {
-  const [remoteVisible, setRemoteVisible] = useState(true);
   const location = useLocation();
 
   return (
@@ -33,17 +34,12 @@ function AppContent() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/portfolio" element={<Portfolio />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Routes>
       
       <Footer />
-      
-      {/* Show remote only on homepage */}
-      {location.pathname === '/' && remoteVisible && (
-        <DraggableRemote 
-          isVisible={remoteVisible} 
-          onClose={() => setRemoteVisible(false)} 
-        />
-      )}
     </div>
   );
 }
