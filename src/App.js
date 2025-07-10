@@ -10,6 +10,7 @@ import About from './pages/public/About';
 import Contact from './pages/public/Contact';
 import Portfolio from './pages/public/Portfolio';
 import Services from './pages/public/Services';
+import Blog from './pages/public/Blog';
 import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 
@@ -32,6 +33,7 @@ function AppContent() {
       <Navbar />
 
       <Routes>
+        <Route path="/blog" element={<Blog />} />
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />

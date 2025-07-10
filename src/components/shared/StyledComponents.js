@@ -179,52 +179,116 @@ export const DashboardContent = styled.div`
 `;
 
 export const Sidebar = styled.div`
-  width: 240px;
-  background: #202020;
+  width: 260px;
+  background: linear-gradient(to bottom, #1a1a2e, #0a0a12);
   padding: 24px 0;
-  border-right: 1px solid #303030;
+  border-right: 1px solid rgba(255, 204, 0, 0.1);
   overflow-y: auto;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ffcc00, #ff9900);
+  }
 `;
 
 export const SidebarSection = styled.div`
-  margin-bottom: 24px;
+  margin-bottom: 28px;
+  padding: 0 16px;
 `;
 
 export const SidebarTitle = styled.h3`
-  padding: 0 24px 8px;
-  font-size: 13px;
-  font-weight: 500;
+  padding: 0 12px 12px;
+  font-size: 14px;
+  font-weight: 600;
   text-transform: uppercase;
-  color: #aaa;
+  color: #ffcc00;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(255, 204, 0, 0.2);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  
+  &::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 16px;
+    background: #ffcc00;
+    margin-right: 10px;
+    border-radius: 2px;
+  }
 `;
 
-export const SidebarLink = styled.a`
+export const SidebarLink = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 10px 24px;
-  font-size: 14px;
-  color: ${props => props.active ? '#fff' : '#aaa'};
-  background: ${props => props.active ? '#303030' : 'transparent'};
+  justify-content: space-between;
+  padding: 0.8rem 1.2rem;
   cursor: pointer;
-  
+  border-radius: 8px;
+  color: ${({ active }) => (active ? '#ffcc00' : '#e0e0ff')};
+  background: ${({ active }) => 
+    active 
+      ? 'linear-gradient(90deg, rgba(255, 204, 0, 0.15), transparent 100%)' 
+      : 'transparent'};
+  font-weight: ${({ active }) => (active ? 600 : 500)};
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 6px;
+  font-size: 1.05rem;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 3px;
+    background: #ffcc00;
+    transform: ${({ active }) => active ? 'scaleY(1)' : 'scaleY(0)'};
+    transform-origin: top;
+    transition: transform 0.3s ease;
+  }
+
   &:hover {
-    background: #303030;
+    background: rgba(255, 204, 0, 0.08);
+    transform: translateX(4px);
+    
+    &::before {
+      transform: scaleY(1);
+    }
   }
-  
-  span {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
+
+  ${({ active }) => active && `
+    box-shadow: 0 4px 12px rgba(255, 204, 0, 0.15);
+    transform: translateX(4px);
+  `}
 `;
 
 export const CountBadge = styled.span`
-  background: #ff0000;
+  background: linear-gradient(135deg, #ff3333, #cc0000);
   color: #fff;
   font-size: 12px;
-  padding: 2px 6px;
-  border-radius: 10px;
+  font-weight: 700;
+  padding: 4px 8px;
+  border-radius: 12px;
+  min-width: 24px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease;
+
+  ${SidebarLink}:hover & {
+    transform: scale(1.1);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+  }
 `;
 
 export const MainContent = styled.main`
@@ -744,3 +808,4 @@ export const DeleteCategoryButton = styled.button`
     background: rgba(255, 50, 50, 0.2);
   }
 `;
+

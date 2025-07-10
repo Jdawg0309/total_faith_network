@@ -97,6 +97,16 @@ const Navbar = () => {
             <FiSettings className="button-icon" />
             <ButtonText>Services</ButtonText>
           </RemoteButton>
+
+          <RemoteButton 
+            to="/blog" 
+            $active={location.pathname === '/blog'}
+            onClick={handleToggle}
+          >
+            <FiSettings className="button-icon" />
+            <ButtonText>Blogs</ButtonText>
+          </RemoteButton>   
+
         </RemoteButtons>
 
         <FooterNote>
